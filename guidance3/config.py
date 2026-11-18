@@ -621,6 +621,12 @@ class RunConfig:
         self.DNA_AA = {}
 
     def user_provided_MSA(self):
+        if self.isServer != 1 and not self.userMSA_File:
+            # Command line without --msaFile/--msaSet: a file with the alignment's name can only be left over from
+            # an earlier run in the same --outDir. It holds coded names and must not be taken for the user's MSA
+            # (that re-codes the codes and breaks every name-restoring step); the alignment step overwrites it.
+            # The web server detects an uploaded MSA by this file's presence in a fresh job dir, so it is unchanged.
+            return
         log_file_path = f"{self.OutLogFile}"
         try:
             with open(log_file_path, 'a') as log_file:
