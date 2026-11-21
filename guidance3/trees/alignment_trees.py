@@ -149,8 +149,10 @@ def standard_supports(iqtree, msa, tree, model, prefix, log_file):
     tree_file = f"{prefix}.input.nwk"
     _write_tree(_clean_copy(tree), tree_file, plain=True)
     try:
+        # -keep-ident: otherwise IQ-TREE drops identical sequences and re-attaches them at the end, so the branches
+        # of `tree` among identical sequences vanish from its output and get no aBayes / SH-aLRT (NA)
         _run([iqtree, "-s", msa, "-m", model, "-te", tree_file, "-abayes", "-alrt", "1000", "-T", "1",
-              "-seed", str(_SEED), "-pre", prefix, "-redo", "-quiet"], log_file)
+              "-seed", str(_SEED), "-pre", prefix, "-redo", "-quiet", "-keep-ident"], log_file)
         labelled = Phylo.read(f"{prefix}.treefile", "newick")
     except Exception as e:
         with open(log_file, "a") as log:
