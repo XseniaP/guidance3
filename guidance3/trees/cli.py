@@ -54,6 +54,8 @@ def build_parser():
                         f"Default: {at.DEFAULT_N_ALT_TREES}.")
     p.add_argument("--no-consensus", action="store_true",
                    help="Do not build the GUIDANCE3 tree (only evaluate --user-tree).")
+    p.add_argument("--thorough", action="store_true",
+                   help="Full IQ-TREE searches instead of -fast (recommended for concatenated alignments; slower).")
     p.add_argument("--proc-num", type=int, default=2, help="IQ-TREE runs in parallel. Default: 2.")
     p.add_argument("--keep-temp", action="store_true", help="Keep the intermediate IQ-TREE files.")
     return p
@@ -142,7 +144,7 @@ def main(argv=None):
         ok = at.build_alignment_trees(alt_files, coded_base, codes, prefix, os.path.join(tmp, "iqtree"), IQTREE,
                                       args.proc_num, log_file, n_trees=args.n_trees,
                                       want_consensus=not args.no_consensus, user_tree_file=args.user_tree or "",
-                                      alt_trees=alt_trees)
+                                      alt_trees=alt_trees, thorough=args.thorough)
     finally:
         if args.keep_temp:
             print(f"[guidance3-tree] intermediate files kept in {tmp}")

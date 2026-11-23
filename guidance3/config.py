@@ -52,6 +52,7 @@ class RunConfig:
         self.msa_set = ""
         self.no_consensus_tree = False
         self.n_alt_trees = 20
+        self.thorough_tree_search = False
         self.user_tree = ""
         self.userMSA_File = ""
         self.PROGRAM = "GUIDANCE3"
@@ -79,6 +80,7 @@ class RunConfig:
             "  --proc_num <int>                    Number of parallel processors. default=2\n"
             "  --noConsensusTree                   Skip the GUIDANCE3 tree (consensus of alternative-MSA trees)\n"
             "  --nAltTrees <int>                   Alternative MSAs used for trees / alignment support. default=20\n"
+            "  --thoroughTreeSearch                Full IQ-TREE searches instead of -fast for the GUIDANCE3 tree\n"
             "  --userTree <path>                   Newick tree to evaluate: alignment support of each branch\n"
             "  --msaSet <dir|zip|tar.gz>           Set of MSAs: the DL model picks the best, GUIDANCE3 scores it as given\n"
             "  --genCode <int>                     Genetic code table index (codon mode only). default=1\n"
@@ -214,6 +216,11 @@ class RunConfig:
         parser.add_argument('--nAltTrees', dest='n_alt_trees', type=int, default=20,
                             help='Number of alternative MSAs to infer trees from for the GUIDANCE3 tree and alignment '
                                  'support. Default=20.')
+        parser.add_argument('--thoroughTreeSearch', dest='thorough_tree_search', action='store_true', default=False,
+                            help='Infer the alternative-MSA trees and the resolved GUIDANCE3 tree with full IQ-TREE '
+                                 'searches instead of -fast. Recommended for concatenated (phylogenomic) alignments, '
+                                 'where fast searches add search error to the trees and to alignment support; '
+                                 'about 15-75x slower per tree.')
         parser.add_argument('--userTree', dest='user_tree', type=str, default="",
                             help='Newick tree with the input sequence names; GUIDANCE3 reports the alignment support '
                                  '(%% of alternative-MSA trees containing it) of each of its branches.')

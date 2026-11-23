@@ -208,6 +208,9 @@ GUIDANCE3 relies on the following external tools. Please cite them alongside GUI
   --nAltTrees N_ALT_TREES
                         Number of alternative MSAs used for the trees. Default is 20.
 
+  --thoroughTreeSearch  Full IQ-TREE searches instead of -fast, for the alternative-MSA trees and the constrained
+                        search. Recommended for concatenated (phylogenomic) alignments; about 15-75x slower per tree.
+
   --userTree USER_TREE  A Newick tree with the input sequence names; GUIDANCE3 reports the alignment support of
                         each of its branches.
 

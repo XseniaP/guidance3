@@ -292,6 +292,16 @@
                         More trees give slightly more accurate results but take longer; it cannot exceed the number of
                         alternative MSAs the run produces.
                     </div>
+                    <div class="form-check mb-1" id="THOROUGH_TREE_SEARCH">
+                        <input class="form-check-input" type="checkbox" name="thorough_tree_search" id="thorough_tree_search" value="1">
+                        <label class="form-check-label" for="thorough_tree_search">
+                            Thorough tree search &mdash; full maximum-likelihood searches instead of fast ones
+                        </label>
+                    </div>
+                    <div class="form-text mb-3" id="THOROUGH_TREE_SEARCH_HELP">
+                        Recommended for concatenated (phylogenomic) alignments, where fast searches add search error to
+                        the trees and to alignment support. Each tree takes about 15&ndash;75 times longer.
+                    </div>
                     <div class="form-check mb-3" id="DISABLE_CONVERGENCE">
                         <input class="form-check-input" type="checkbox" name="disable_convergence" id="disable_convergence" value="1">
                         <label class="form-check-label" for="disable_convergence">

@@ -146,6 +146,9 @@
                 {% else %}
                 Convergence: enabled (stops early when scores stabilise)<br>
                 {% endif %}
+                {% if form.get('thorough_tree_search') %}
+                Tree search: thorough (full maximum-likelihood searches)<br>
+                {% endif %}
                 {% endif %}
 
                 Method: {{form['PROGRAM']}}<br>

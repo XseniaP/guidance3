@@ -189,6 +189,7 @@ class GuidanceState:
                 form['n_alt_trees'] = min(100, max(3, int(cgi_form.get('n_alt_trees', 20))))
             except (TypeError, ValueError):
                 form['n_alt_trees'] = 20
+            form['thorough_tree_search'] = dict_key_defined_not_empty('thorough_tree_search', cgi_form)
             form['user_tree'] = os.path.join(var['WorkingDir'], var['user_tree_file']) if var.get('user_tree_file') else ''
             form['msa_set'] = os.path.join(var['WorkingDir'], var['msa_set_upload']) if var.get('msa_set_upload') else ''
                 

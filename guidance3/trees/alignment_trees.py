@@ -1,6 +1,7 @@
 """Phylogenetic inference from the GUIDANCE3 alternative MSAs.
 
-One ML tree is inferred from each of k randomly chosen alternative MSAs (IQ-TREE -fast). From these trees:
+One ML tree is inferred from each of k randomly chosen alternative MSAs (IQ-TREE -fast by default; full searches with
+thorough=True / --thoroughTreeSearch). From these trees:
 
 * the GUIDANCE3 tree: the extended majority-rule consensus (splits in more than half of the trees, then the
   remaining splits from most to least frequent while compatible), resolved by one ML search on the reference MSA
@@ -126,8 +127,10 @@ def _run(cmd, log_file):
         raise RuntimeError(f"IQ-TREE failed ({res.returncode}): {' '.join(cmd)}\n{res.stderr[-2000:]}")
 
 
-def _infer(iqtree, msa, prefix, model, log_file, extra=()):
-    _run([iqtree, "-s", msa, "-m", model, "-fast", "-T", "1", "-seed", str(_SEED), "-pre", prefix,
+def _infer(iqtree, msa, prefix, model, log_file, extra=(), thorough=False):
+    """ML tree of `msa`: IQ-TREE -fast (default) or, with thorough=True, a full search."""
+    search = [] if thorough else ["-fast"]
+    _run([iqtree, "-s", msa, "-m", model, *search, "-T", "1", "-seed", str(_SEED), "-pre", prefix,
           "-redo", "-quiet", *extra], log_file)
     return Phylo.read(f"{prefix}.treefile", "newick")
 
@@ -281,7 +284,8 @@ def run_alignment_trees(config):
         return build_alignment_trees(
             [os.path.join(alt_dir, a) for a in alts], os.path.join(work, config.Alignment_File),
             _read_codes(os.path.join(work, config.code_fileName)), prefix, tmp, config.iqtree_prog,
-            config.proc_num, log_file, n_trees=n_trees, want_consensus=want_consensus, user_tree_file=user_tree_file)
+            config.proc_num, log_file, n_trees=n_trees, want_consensus=want_consensus, user_tree_file=user_tree_file,
+            thorough=bool(getattr(config, "thorough_tree_search", False)))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -293,13 +297,15 @@ def sample_alternatives(alt_files, n_trees):
 
 
 def build_alignment_trees(alt_files, reference, codes, prefix, tmp, iqtree, proc_num, log_file,
-                          n_trees=DEFAULT_N_ALT_TREES, want_consensus=True, user_tree_file="", alt_trees=None):
+                          n_trees=DEFAULT_N_ALT_TREES, want_consensus=True, user_tree_file="", alt_trees=None,
+                          thorough=False):
     """Core of the tree step, shared by the pipeline and the guidance3-tree command.
     alt_files: alternative MSA paths (sequence names = codes); a seeded sample of n_trees of them is used.
     alt_trees: instead of alt_files, already inferred trees (Bio.Phylo trees, leaves = codes).
     reference: base MSA (names = codes) for resolving the consensus and for aBayes / SH-aLRT; may be None when
     only a user tree is evaluated (the aBayes / SH-aLRT columns are then NA).
-    codes: {code: original name}. Writes <prefix>_* files. Returns True on success."""
+    codes: {code: original name}. Writes <prefix>_* files. Returns True on success.
+    thorough: full IQ-TREE searches instead of -fast, for the alternative-MSA trees and the resolving search."""
     os.makedirs(tmp, exist_ok=True)
     if alt_trees is None:
         chosen = sample_alternatives(alt_files, n_trees)
@@ -317,11 +323,12 @@ def build_alignment_trees(alt_files, reference, codes, prefix, tmp, iqtree, proc
         reference = ref_copy
 
     if alt_trees is None:
-        print(f"[alignment_trees] inferring {k} trees from alternative MSAs (IQ-TREE {model}, -fast)...")
+        print(f"[alignment_trees] inferring {k} trees from alternative MSAs (IQ-TREE {model}, "
+              f"{'full search' if thorough else '-fast'})...")
 
         def one(i_path):
             i, path = i_path
-            return _infer(iqtree, path, os.path.join(tmp, f"alt{i:03d}"), model, log_file)
+            return _infer(iqtree, path, os.path.join(tmp, f"alt{i:03d}"), model, log_file, thorough=thorough)
 
         with ThreadPoolExecutor(max_workers=max(1, int(proc_num))) as pool:
             trees = list(pool.map(one, enumerate(chosen)))
@@ -348,7 +355,7 @@ def build_alignment_trees(alt_files, reference, codes, prefix, tmp, iqtree, proc
         with open(constraint, "w") as fh:
             fh.write(splits_to_newick(keep, leaves) + "\n")
         resolved = _infer(iqtree, reference, os.path.join(tmp, "guidance3_tree"), model, log_file,
-                          extra=("-g", constraint))
+                          extra=("-g", constraint), thorough=thorough)
         std = standard_supports(iqtree, reference, resolved, model, os.path.join(tmp, "guidance3_tree_support"),
                                 log_file)
         rows = _annotate(resolved, counts, k, codes)
