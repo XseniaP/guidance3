@@ -138,6 +138,9 @@ def _infer(iqtree, msa, prefix, model, log_file, extra=(), thorough=False):
 def _clean_copy(tree):
     """Copy of a tree without internal labels (IQ-TREE -te input)."""
     import copy
+    import sys
+    # deepcopy recurses ~5 frames per tree level: a deep (ladder-like) tree of ~200 leaves exceeds the default 1000
+    sys.setrecursionlimit(max(sys.getrecursionlimit(), 20000))
     t = copy.deepcopy(tree)
     for c in t.find_clades():
         if not c.is_terminal():
