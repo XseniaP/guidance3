@@ -6,6 +6,13 @@ from guidance3.sequences.fasta import *
 import numpy as np
 from guidance3.utils.timing import timeit
 
+
+def _score_timeout(config):
+    """Time limit (s) of one msa_set_score run; long or many alternative MSAs need more than minutes.
+    Configurable via config.score_timeout (default 6 hours), like config.hot_timeout for the aligners."""
+    return getattr(config, 'score_timeout', 6 * 3600)
+
+
 def remove_pos_no_bioperl(pos_to_remove, msa_hash_ref):
     for seq_id, seq_list in msa_hash_ref.items():
         seq_list[pos_to_remove] = ""
@@ -915,17 +922,17 @@ def calculate_sp_scores(config):
                 log_file.write(msg)
 
     try:
-        subprocess.run(cmd, shell=True, timeout=600)
+        subprocess.run(cmd, shell=True, timeout=_score_timeout(config))
     except subprocess.TimeoutExpired:
-        raise RuntimeError(f"Command timed out after 600s: {cmd}")
+        raise RuntimeError(f"Command timed out after {_score_timeout(config)}s: {cmd}")
 
     if not os.path.exists(f"{config.WorkingDir}{config.Output_Prefix}_res_pair_res.scr") or os.path.getsize(
             f"{config.WorkingDir}{config.Output_Prefix}_res_pair_res.scr") == 0:
         for i in range(3):
             try:
-                subprocess.run(cmd, shell=True, timeout=600)
+                subprocess.run(cmd, shell=True, timeout=_score_timeout(config))
             except subprocess.TimeoutExpired:
-                raise RuntimeError(f"Command timed out after 600s: {cmd}")
+                raise RuntimeError(f"Command timed out after {_score_timeout(config)}s: {cmd}")
             except Exception as e:
                 with open(config.OutLogFile, "a") as log_file:
                     log_file.write(f"Failed to calculate final scores {e}\n")
@@ -1389,11 +1396,11 @@ def calculate_sp_scores_convergence(config, countTrees):
         print(f"[incremental] SP score check tree #{countTrees}: {len(new_files)} new MSAs\n")
 
     try:
-        result = subprocess.run(cmd, shell=True, timeout=600)
+        result = subprocess.run(cmd, shell=True, timeout=_score_timeout(config))
     except subprocess.TimeoutExpired:
         if os.path.exists(file_list_path):
             os.unlink(file_list_path)
-        raise RuntimeError(f"msa_set_score timed out after 600s: {cmd}")
+        raise RuntimeError(f"msa_set_score timed out after {_score_timeout(config)}s: {cmd}")
 
     if result.returncode != 0:
         if os.path.exists(file_list_path):
