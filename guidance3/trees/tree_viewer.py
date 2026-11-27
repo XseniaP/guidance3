@@ -67,7 +67,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
 <div id="tip"></div>
 <script>
 const NEWICK = __NEWICK__;
-const INFO = __INFO__;          // per-branch aBayes / SH-aLRT / combined, keyed by branchKey()
+const INFO = __INFO__;          // per-branch aBayes / SH-aLRT, keyed by branchKey()
 const N_TREES = __NTREES__;
 const CIRCULAR_FROM = __CIRCULAR_FROM__;
 
@@ -133,7 +133,6 @@ function tipHtml(n) {
   if (v !== null) rows.push("Alignment support: <b>" + v + "%</b> of " + N_TREES + " trees");
   if (extra.abayes != null) rows.push("aBayes (base MSA): <b>" + extra.abayes.toFixed(3) + "</b>");
   if (extra.alrt != null) rows.push("SH-aLRT (base MSA): <b>" + extra.alrt.toFixed(1) + "</b>");
-  if (extra.combined != null) rows.push("aBayes &times; alignment support: <b>" + extra.combined.toFixed(3) + "</b>");
   rows.push(names.length + " taxa: " + esc(names.slice(0, 12).join(", ")) + (names.length > 12 ? ", &hellip;" : ""));
   return rows.join("<br>");
 }
@@ -290,7 +289,7 @@ draw();
 
 def write_tree_html(newick_path, out_html, title, n_trees, branch_info=None):
     """Write an interactive tree page for a Newick tree with alignment-support labels. branch_info: optional
-    {branch key: {"abayes", "alrt", "combined"}} shown on hover (keys from alignment_trees._viewer_key)."""
+    {branch key: {"abayes", "alrt"}} shown on hover (keys from alignment_trees._viewer_key)."""
     with open(newick_path) as fh:
         newick = fh.read().strip()
     subtitle = (f"Branch colours show alignment support: the percentage of the {n_trees} trees inferred from "

@@ -242,18 +242,18 @@ def _write_table(rows, path, k, std):
     """Branch table: alignment support, aBayes and SH-aLRT on the base MSA, and aBayes x alignment support.
     Returns {viewer key: {...}} for the tree viewer."""
     info = {}
-    with open(path, "w") as fh:
+    with open(path, "w", encoding="utf-8") as fh:  # the header has a non-ASCII "×"
         fh.write(f"# alignment_support: % of the {k} trees inferred from alternative MSAs that contain the branch\n")
         fh.write("# abayes, sh_alrt: aBayes and SH-aLRT (1000 replicates) on the base MSA, topology fixed (IQ-TREE)\n")
-        fh.write("# combined: abayes x alignment_support / 100 (in our simulations it identified incorrect branches "
-                 "better than either measure alone)\n")
-        fh.write("branch\talignment_support\tabayes\tsh_alrt\tcombined\tn_taxa_smaller_side\ttaxa_smaller_side\n")
+        fh.write("# aBayes × alignment support: abayes x alignment_support / 100\n")
+        fh.write("branch\talignment_support\tabayes\tsh_alrt\taBayes × alignment support\tn_taxa_smaller_side"
+                 "\ttaxa_smaller_side\n")
         for r in rows:
             alrt, abayes = std.get(r["split"], (None, None))
-            combined = None if abayes is None else abayes * r["alignment_support"] / 100
+            product = None if abayes is None else abayes * r["alignment_support"] / 100
             fh.write("\t".join([str(r["branch"]), str(r["alignment_support"]), _fmt(abayes, 3), _fmt(alrt, 1),
-                                 _fmt(combined, 3), str(r["n_smaller"]), r["taxa"]]) + "\n")
-            info[r["key"]] = {"abayes": abayes, "alrt": alrt, "combined": combined}
+                                 _fmt(product, 3), str(r["n_smaller"]), r["taxa"]]) + "\n")
+            info[r["key"]] = {"abayes": abayes, "alrt": alrt}
     return info
 
 

@@ -327,7 +327,7 @@ guidance3-tree --alt-trees <prefix>_AltMSA_trees.nwk --base-msa <default_msa.fas
 
 - An ML tree (IQ-TREE 3, `-fast`; LG+G for proteins, GTR+G for nucleotides) is inferred from each of `--n-trees` (default 20) randomly chosen MSAs of the set.
 - **GUIDANCE3 tree**: the extended majority-rule consensus of these trees, resolved by an ML search on the base MSA constrained to it.
-- **Branch supports** (one table row per branch): alignment support (% of the trees containing the branch), aBayes and SH-aLRT (1000 replicates) on the base MSA with the topology fixed, and combined = aBayes × alignment support / 100.
+- **Branch supports** (one table row per branch): alignment support (% of the trees containing the branch), aBayes and SH-aLRT (1000 replicates) on the base MSA with the topology fixed, and aBayes × alignment support (aBayes × alignment support / 100).
 - `--base-msa` defaults to the MSA of the set that the DL model ranks best (ranking written to `<prefix>_DL_ranking.csv`). With `--alt-trees` it is required for the GUIDANCE3 tree; with `--no-consensus --user-tree` and no base MSA, only alignment support is reported (aBayes / SH-aLRT columns are `NA`).
 - Outputs (`--prefix`, default `MSA`): `<prefix>_GUIDANCE3_tree.nwk` / `_branch_support.tsv` / `.html` (interactive viewer), `<prefix>_UserTree_alignment_support.nwk` / `.tsv` / `.html`, and `<prefix>_AltMSA_trees.nwk`.
 

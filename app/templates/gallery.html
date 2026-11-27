@@ -92,9 +92,7 @@
                     <b>Alternative MSAs and the SuperMSA.</b> All the alternative MSAs computed by GUIDANCE3
                     (<a href="{{ ex }}/{{ g3 }}_AlternativeMSA.tar.gz">archive</a>). The
                     {% if job %}<a href="{{ job }}#super_msa" target="_blank">SuperMSA</a>{% else %}SuperMSA, created
-                    on the results page,{% endif %} concatenates the base MSA with randomly chosen alternatives; trees
-                    inferred from such a concatenation of about 20 alternatives were more accurate than trees inferred
-                    from a single MSA.
+                    on the results page,{% endif %} concatenates the base MSA with randomly chosen alternatives.
                 </li>
                 <li class="list-group-item">
                     <b>Best MSA.</b> The alternative MSA with the lowest distance from the true MSA predicted by our
@@ -108,7 +106,7 @@
                     <a href="{{ ex }}/{{ g3 }}_GUIDANCE3_tree.nwk" target="_blank">Newick</a>). The
                     <a href="{{ ex }}/{{ g3 }}_GUIDANCE3_tree_branch_support.tsv" target="_blank">branch table</a>
                     gives, for each branch, alignment support, aBayes and SH-aLRT on the base MSA, and aBayes &times;
-                    alignment support, which identified incorrect branches best in our simulations. The
+                    alignment support. The
                     <a href="{{ ex }}/{{ g3 }}_AltMSA_trees.nwk" target="_blank">trees of the individual alternative
                     MSAs</a> are also provided.
                 </li>

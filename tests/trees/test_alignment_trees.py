@@ -53,7 +53,7 @@ def test_user_tree_alignment_support(tmp_path):
     assert at.evaluate_user_tree(str(user), _counts(trees), 4, codes, LEAVES, prefix, str(tmp_path / "log"))
     lines = [l for l in open(prefix + "_UserTree_alignment_support.tsv").read().splitlines() if not l.startswith("#")]
     header, rows = lines[0].split("\t"), [dict(zip(lines[0].split("\t"), l.split("\t"))) for l in lines[1:]]
-    assert header[:5] == ["branch", "alignment_support", "abayes", "sh_alrt", "combined"]
+    assert header[:5] == ["branch", "alignment_support", "abayes", "sh_alrt", "aBayes × alignment support"]
     support = {r["taxa_smaller_side"]: int(r["alignment_support"]) for r in rows}
     assert support == {"A,B": 75, "C,D": 75, "E,F": 100}
     assert all(r["abayes"] == "NA" for r in rows)  # no IQ-TREE run in this test
